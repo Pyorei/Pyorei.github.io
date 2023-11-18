@@ -1,28 +1,10 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title></title>
-        <link>https://pyorei.github.io/</link>
-        <description>Paliya&#39;s blog power by Hugo - LoveIt</description>
+        <title>目标检测 - 标签 - </title>
+        <link>https://pyorei.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</link>
+        <description>目标检测 - 标签 - </description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
-            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 14 Nov 2023 21:00:00 &#43;0800</lastBuildDate>
-            <atom:link href="https://pyorei.github.io/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-    <title>3D目标检测-使用realsense采集的.ply文件进行训练</title>
-    <link>https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-%E4%BD%BF%E7%94%A8realsense%E9%87%87%E9%9B%86%E7%9A%84.ply%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%AE%AD%E7%BB%83/</link>
-    <pubDate>Tue, 14 Nov 2023 21:00:00 &#43;0800</pubDate>
-    <author>帕里亚</author>
-    <guid>https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-%E4%BD%BF%E7%94%A8realsense%E9%87%87%E9%9B%86%E7%9A%84.ply%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%AE%AD%E7%BB%83/</guid>
-    <description><![CDATA[OpenPCDet环境配置 首先需要安装好open3d，在OpenPCDet根目录下运行以下命令完成基本的环境配置 1 2 3 pip install open3d pip install -r requirements.txt python setup.py develop 在]]></description>
-</item>
-<item>
-    <title>3D目标检测-BEVFormer、BEVDepth</title>
-    <link>https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/</link>
-    <pubDate>Wed, 09 Nov 2022 14:34:02 &#43;0800</pubDate>
-    <author>帕里亚</author>
-    <guid>https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/</guid>
-    <description><![CDATA[<p>很久没有更新博客了，近期一直在忙秋招相关的事情，抽空将暑期实习的3D目标检测资料进行总结归纳。由于篇幅过于繁杂，重点挑选基于纯视觉的BEV(鸟瞰图)的3D目标检测进行总结归纳，包括BEVFormer、BEVDepth。至于Focus3D、PETRv2、BEVFusion等，基于体素、点云和融合方案的3D目标检测有空可能会再做更新。</p>]]></description>
-</item>
-<item>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 06 Aug 2022 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://pyorei.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="self" type="application/rss+xml" /><item>
     <title>关于YOLOv7的分析</title>
     <link>https://pyorei.github.io/%E5%85%B3%E4%BA%8Eyolov7%E7%9A%84%E5%88%86%E6%9E%90/</link>
     <pubDate>Sat, 06 Aug 2022 12:00:00 &#43;0800</pubDate>
@@ -55,14 +37,6 @@
     <description><![CDATA[<p>在学会YOLO目标检测后第一次参加这样的比赛，特此做个记录，且实验室算力有限，后续不会再对baseline进行改进，此处只提出一些改进的方案。</p>]]></description>
 </item>
 <item>
-    <title>XML文件转TXT</title>
-    <link>https://pyorei.github.io/xml%E6%96%87%E4%BB%B6%E8%BD%ACtxt/</link>
-    <pubDate>Wed, 06 Apr 2022 12:00:00 &#43;0800</pubDate>
-    <author>帕里亚</author>
-    <guid>https://pyorei.github.io/xml%E6%96%87%E4%BB%B6%E8%BD%ACtxt/</guid>
-    <description><![CDATA[<p>一个简单的XML标签转TXT标签方法</p>]]></description>
-</item>
-<item>
     <title>水下目标检测之数据集和数据增强方法</title>
     <link>https://pyorei.github.io/%E6%B0%B4%E4%B8%8B%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B9%8B%E6%95%B0%E6%8D%AE%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/</link>
     <pubDate>Wed, 06 Apr 2022 12:00:00 &#43;0800</pubDate>
@@ -77,14 +51,6 @@
     <author>帕里亚</author>
     <guid>https://pyorei.github.io/yolov5%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</guid>
     <description><![CDATA[<p>yolov1到v4的论文在<a href="https://blog.csdn.net/weixin_39524959/article/details/111136986" target="_blank" rel="noopener noreffer ">这篇文章</a>里比较详细，此处不对其网络做更深入的介绍，重点在于如何训练以及如何用训练好的模型做检测。以下内容参考了<a href="https://github.com/ultralytics/yolov5" target="_blank" rel="noopener noreffer ">源码</a>提供的教程，是对此前工作的技术总结。</p>]]></description>
-</item>
-<item>
-    <title>realsense在机械臂上的配置与安装</title>
-    <link>https://pyorei.github.io/realsense%E5%9C%A8%E6%9C%BA%E6%A2%B0%E8%87%82%E4%B8%8A%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%AE%89%E8%A3%85/</link>
-    <pubDate>Mon, 13 Dec 2021 12:00:00 &#43;0800</pubDate>
-    <author>帕里亚</author>
-    <guid>https://pyorei.github.io/realsense%E5%9C%A8%E6%9C%BA%E6%A2%B0%E8%87%82%E4%B8%8A%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%AE%89%E8%A3%85/</guid>
-    <description><![CDATA[<p>早在上半年导师就给了一个realsense d455做机器视觉相关的内容，此次将其配置到ros环境下的机械臂末端组成eye-in-hand机械臂平台，其中主要任务是realsense在ros环境下的配置和相机坐标系与机械臂末端的固定。</p>]]></description>
 </item>
 </channel>
 </rss>

@@ -4,7 +4,55 @@
         <link>https://pyorei.github.io/tags/</link>
         <description>Tags - 标签 - </description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
-            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://pyorei.github.io/tags/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 14 Nov 2023 21:00:00 &#43;0800</lastBuildDate><atom:link href="https://pyorei.github.io/tags/" rel="self" type="application/rss+xml" /><item>
+    <title>3D目标检测</title>
+    <link>https://pyorei.github.io/tags/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</link>
+    <pubDate>Tue, 14 Nov 2023 21:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>目标检测</title>
+    <link>https://pyorei.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</link>
+    <pubDate>Sat, 06 Aug 2022 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>tool</title>
+    <link>https://pyorei.github.io/tags/tool/</link>
+    <pubDate>Wed, 06 Apr 2022 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/tool/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>realsense</title>
+    <link>https://pyorei.github.io/tags/realsense/</link>
+    <pubDate>Mon, 13 Dec 2021 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/realsense/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>机械臂</title>
+    <link>https://pyorei.github.io/tags/%E6%9C%BA%E6%A2%B0%E8%87%82/</link>
+    <pubDate>Mon, 13 Dec 2021 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/%E6%9C%BA%E6%A2%B0%E8%87%82/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>ros</title>
+    <link>https://pyorei.github.io/tags/ros/</link>
+    <pubDate>Wed, 03 Nov 2021 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/tags/ros/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
     <title>安装</title>
     <link>https://pyorei.github.io/tags/installation/</link>
     <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate>

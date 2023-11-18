@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>realsense - 标签 - </title>
+        <link>https://pyorei.github.io/tags/realsense/</link>
+        <description>realsense - 标签 - </description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 13 Dec 2021 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://pyorei.github.io/tags/realsense/" rel="self" type="application/rss+xml" /><item>
+    <title>realsense在机械臂上的配置与安装</title>
+    <link>https://pyorei.github.io/realsense%E5%9C%A8%E6%9C%BA%E6%A2%B0%E8%87%82%E4%B8%8A%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%AE%89%E8%A3%85/</link>
+    <pubDate>Mon, 13 Dec 2021 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/realsense%E5%9C%A8%E6%9C%BA%E6%A2%B0%E8%87%82%E4%B8%8A%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%AE%89%E8%A3%85/</guid>
+    <description><![CDATA[<p>早在上半年导师就给了一个realsense d455做机器视觉相关的内容，此次将其配置到ros环境下的机械臂末端组成eye-in-hand机械臂平台，其中主要任务是realsense在ros环境下的配置和相机坐标系与机械臂末端的固定。</p>]]></description>
+</item>
+</channel>
+</rss>

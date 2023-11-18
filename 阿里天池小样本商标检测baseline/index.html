@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>阿里天池：小样本商标检测（baseline0.50） - </title><meta name="Description" content="Paliya&#39;s blog power by Hugo - LoveIt"><meta property="og:title" content="阿里天池：小样本商标检测（baseline0.50）" />
+<meta property="og:description" content="在学会YOLO目标检测后第一次参加这样的比赛，特此做个记录，且实验室算力有限，后续不会再对baseline进行改进，此处只提出一些改进的方案。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" /><meta property="og:image" content="https://pyorei.github.io/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-04-21T12:00:00+08:00" />
+<meta property="article:modified_time" content="2022-04-21T12:00:00+08:00" /><meta property="og:site_name" content="帕里亚的博客" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://pyorei.github.io/logo.png"/>
+
+<meta name="twitter:title" content="阿里天池：小样本商标检测（baseline0.50）"/>
+<meta name="twitter:description" content="在学会YOLO目标检测后第一次参加这样的比赛，特此做个记录，且实验室算力有限，后续不会再对baseline进行改进，此处只提出一些改进的方案。"/>
+<meta name="application-name" content="LoveIt">
+<meta name="apple-mobile-web-app-title" content="LoveIt"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" /><link rel="prev" href="https://pyorei.github.io/xml%E6%96%87%E4%BB%B6%E8%BD%ACtxt/" /><link rel="next" href="https://pyorei.github.io/%E7%99%BE%E5%BA%A6%E9%A3%9E%E6%A1%A8-%E5%B7%A5%E4%B8%9A%E8%AF%BB%E8%A1%A8%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D%E4%BF%AE%E6%94%B9%E8%AF%BB%E8%A1%A8%E8%8C%83%E5%9B%B4%E5%92%8C%E6%95%B0%E5%80%BC/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "阿里天池：小样本商标检测（baseline0.50）",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/pyorei.github.io\/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline\/"
+        },"image": ["https:\/\/pyorei.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "目标检测","wordcount":  5051 ,
+        "url": "https:\/\/pyorei.github.io\/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline\/","datePublished": "2022-04-21T12:00:00+08:00","dateModified": "2022-04-21T12:00:00+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/pyorei.github.io\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "帕里亚"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title=""><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>帕里亚的博客</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title=""><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>帕里亚的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">阿里天池：小样本商标检测（baseline0.50）</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>帕里亚</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/blog/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Blog</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="212112-04-04">212112-04-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 5051 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 11 分钟&nbsp;<span id="/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" class="leancloud_visitors" data-flag-title="阿里天池：小样本商标检测（baseline0.50）">
+                        <i class="far fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#数据集分析">数据集分析</a></li>
+    <li><a href="#json2yolo">JSON2YOLO</a></li>
+    <li><a href="#数据集离线增强">数据集离线增强</a></li>
+    <li><a href="#数据分割">数据分割</a></li>
+    <li><a href="#模型训练">模型训练</a></li>
+    <li><a href="#成绩提交">成绩提交</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>在学会YOLO目标检测后第一次参加这样的比赛，特此做个记录，且实验室算力有限，后续不会再对baseline进行改进，此处只提出一些改进的方案。</p>
+<h1 id="阿里天池小样本商标检测baseline050">阿里天池：小样本商标检测（baseline0.50）</h1>
+<p>在学会YOLO目标检测后第一次参加这样的比赛，特此做个记录，且实验室算力有限，后续不会再对baseline进行改进，此处只提出一些改进的方案。比赛链接：<a href="https://tianchi.aliyun.com/competition/entrance/531948/introduction" target="_blank" rel="noopener noreffer ">ICME-2022 安全AI挑战者计划第九期：小样本商标检测挑战赛-天池大赛-阿里云天池 (aliyun.com)</a>。比赛规则比较严格，首先只能使用Image 1K的预训练模型，但YOLO自身只提供基于COCO的预训练模型；且不允许使用模型融合，即使用多个模型的预测结果做并集，冲排名的话需要注意。本文需要掌握一定的yolo检测基础，具体的训练命令和检测命令省略。</p>
+<h2 id="数据集分析">数据集分析</h2>
+<p>首先比赛提供的是COCO格式的数据标注结果，初赛按理说是提供50类商品的每类50张图片，但实际只有2476张，可以参考<a href="https://github.com/CarryHJR/LogDet/tree/master/LogDetMini/eda" target="_blank" rel="noopener noreffer ">这篇文章</a>做数据集的分析，具体分析结果如下：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"
+        data-srcset="https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center, https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center 1.5x, https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center 2x"
+        data-sizes="auto"
+        alt="https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"
+        title="天池eda1" /></p>
+<p>图中可以看出数据集所有图片的宽高和宽高比，大多还是以淘宝商品页的800*800为主，实现代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">glob</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">root</span> <span class="o">=</span> <span class="s2">&#34;数据集根目录&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">img_dir</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img_paths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">img_dir</span> <span class="o">+</span> <span class="s1">&#39;/*&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_img_size</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">w_list</span><span class="p">,</span> <span class="n">h_list</span><span class="p">,</span> <span class="n">rat_list</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">img_paths</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">get_img_size</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">h_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">w_list</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">light_palette</span><span class="p">(</span><span class="s2">&#34;seagreen&#34;</span><span class="p">,</span> <span class="n">as_cmap</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Width&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">h_list</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&#34;RdPu&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w_list</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h_list</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&#34;RdPu&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;W&amp;H Ratio&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于数据标注的结果分析如下，重点考察bbox的宽高比和面积占比：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"
+        data-srcset="https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center, https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center 1.5x, https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark%2ctype_d3F5LXplbmhlaQ%2cshadow_50%2ctext_Q1NETiBA5biV6YeM5Lqa%2csize_20%2ccolor_FFFFFF%2ct_70%2cg_se%2cx_16#pic_center 2x"
+        data-sizes="auto"
+        alt="https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"
+        title="bbox长宽比" /></p>
+<p><code>bbox 小目标(area&lt;%3)占比 统计</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">+------------------------+---------------------+
+</span></span><span class="line"><span class="cl">|         class          |  small object ratio |
+</span></span><span class="line"><span class="cl">+------------------------+---------------------+
+</span></span><span class="line"><span class="cl">|         冰墩墩         | 0.35398230088495575 |
+</span></span><span class="line"><span class="cl">|       Sanyo/三洋       |         1.0         |
+</span></span><span class="line"><span class="cl">|     Eifini/伊芙丽      |         1.0         |
+</span></span><span class="line"><span class="cl">|      PSALTER/诗篇      |  0.9636363636363636 |
+</span></span><span class="line"><span class="cl">|        Beaster         |       0.84375       |
+</span></span><span class="line"><span class="cl">|        ON/昂跑         |  0.9878048780487805 |
+</span></span><span class="line"><span class="cl">|     BYREDO/柏芮朵      |  0.9568965517241379 |
+</span></span><span class="line"><span class="cl">|         Ubras          |         0.98        |
+</span></span><span class="line"><span class="cl">|       Eternelle        |  0.6326530612244898 |
+</span></span><span class="line"><span class="cl">| PERFECT DIARY/完美日记  |  0.8918918918918919 |
+</span></span><span class="line"><span class="cl">|         花西子         |  0.9897959183673469 |
+</span></span><span class="line"><span class="cl">|     Clarins/娇韵诗     |  0.9734513274336283 |
+</span></span><span class="line"><span class="cl">|   L&#39;occitane/欧舒丹    |  0.9716312056737588 |
+</span></span><span class="line"><span class="cl">|     Versace/范思哲     |  0.8235294117647058 |
+</span></span><span class="line"><span class="cl">|     Mizuno/美津浓      |  0.7520661157024794 |
+</span></span><span class="line"><span class="cl">|      Lining/李宁       |         0.95        |
+</span></span><span class="line"><span class="cl">|    DOUBLE STAR/双星    |  0.5416666666666666 |
+</span></span><span class="line"><span class="cl">|     YONEX/尤尼克斯      |  0.8475609756097561 |
+</span></span><span class="line"><span class="cl">|  Tory Burch/汤丽柏琦    |  0.9105691056910569 |
+</span></span><span class="line"><span class="cl">|       Gucci/古驰       |  0.9432624113475178 |
+</span></span><span class="line"><span class="cl">| Louis Vuitton/路易威登  |  0.9702970297029703 |
+</span></span><span class="line"><span class="cl">|   CARTELO/卡帝乐鳄鱼    |  0.7894736842105263 |
+</span></span><span class="line"><span class="cl">|         JORDAN         |       0.828125      |
+</span></span><span class="line"><span class="cl">|         KENZO          |  0.8148148148148148 |
+</span></span><span class="line"><span class="cl">|       UNDEFEATED       |  0.8936170212765957 |
+</span></span><span class="line"><span class="cl">|       BOY LONDON       |  0.6715328467153284 |
+</span></span><span class="line"><span class="cl">|       TREYO/雀友       |  0.9081632653061225 |
+</span></span><span class="line"><span class="cl">|        carhartt        |  0.9514563106796117 |
+</span></span><span class="line"><span class="cl">|          洁柔          |  0.9771241830065359 |
+</span></span><span class="line"><span class="cl">|     Blancpain/宝珀     |         1.0         |
+</span></span><span class="line"><span class="cl">|          GXG           |         1.0         |
+</span></span><span class="line"><span class="cl">|          乐町          |         1.0         |
+</span></span><span class="line"><span class="cl">|    Diadora/迪亚多纳     | 0.38271604938271603 |
+</span></span><span class="line"><span class="cl">|     TUCANO/啄木鸟       |  0.6031746031746031 |
+</span></span><span class="line"><span class="cl">|         Loewe          |  0.9120879120879121 |
+</span></span><span class="line"><span class="cl">|      Granite Gear      |  0.9813084112149533 |
+</span></span><span class="line"><span class="cl">|    DESCENTE/迪桑特      |         1.0         |
+</span></span><span class="line"><span class="cl">|         OSPREY         |  0.8968253968253969 |
+</span></span><span class="line"><span class="cl">|     Swatch/斯沃琪       |  0.9466666666666667 |
+</span></span><span class="line"><span class="cl">|     erke/鸿星尔克       |  0.8674698795180723 |
+</span></span><span class="line"><span class="cl">|     Massimo Dutti      |  0.9807692307692307 |
+</span></span><span class="line"><span class="cl">|         PINKO          |  0.8390804597701149 |
+</span></span><span class="line"><span class="cl">|       PALLADIUM        |  0.9441624365482234 |
+</span></span><span class="line"><span class="cl">|    origins/悦木之源     |  0.9767441860465116 |
+</span></span><span class="line"><span class="cl">|       Trendiano        |         1.0         |
+</span></span><span class="line"><span class="cl">|          音儿           |         1.0         |
+</span></span><span class="line"><span class="cl">|   Monster Guardians    |  0.9891304347826086 |
+</span></span><span class="line"><span class="cl">|         敷尔佳          |  0.8620689655172413 |
+</span></span><span class="line"><span class="cl">|      IPSA/茵芙莎        |  0.9777777777777777 |
+</span></span><span class="line"><span class="cl">|   Schwarzkopf/施华蔻    |  0.954954954954955  |
+</span></span><span class="line"><span class="cl">|          all           |  0.8899438093392753 |
+</span></span><span class="line"><span class="cl">+------------------------+---------------------+
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>具体实现代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># refer: https://github.com/CarryHJR/LogDet/blob/master/LogDetMini/eda/eda.ipynb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pycocotools.coco</span> <span class="kn">import</span> <span class="n">COCO</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">root</span> <span class="o">=</span> <span class="s2">&#34;json文件所在的根目录&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">json_path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;instances_train2017.json&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">coco</span> <span class="o">=</span> <span class="n">COCO</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span> <span class="c1"># 此处可能会报错，需要再coco的jsonload语句下添加encoding=&#39;utf-8&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;bbox 小目标(area&lt;%3)占比 统计&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">class_names</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_ratios_cls</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">cat_id</span> <span class="ow">in</span> <span class="n">coco</span><span class="o">.</span><span class="n">cats</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wh_ratios</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">ann_id</span> <span class="ow">in</span> <span class="n">coco</span><span class="o">.</span><span class="n">getAnnIds</span><span class="p">(</span><span class="n">catIds</span><span class="o">=</span><span class="p">[</span><span class="n">cat_id</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ann</span> <span class="o">=</span> <span class="n">coco</span><span class="o">.</span><span class="n">anns</span><span class="p">[</span><span class="n">ann_id</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">image_id</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">w_ratio</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">coco</span><span class="o">.</span><span class="n">imgs</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">h_ratio</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">coco</span><span class="o">.</span><span class="n">imgs</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">wh_ratios</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">w_ratio</span><span class="p">,</span> <span class="n">h_ratio</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wh_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wh_ratios</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wh_ratios</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wh_ratios</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">wh_ratios</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">class_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coco</span><span class="o">.</span><span class="n">cats</span><span class="p">[</span><span class="n">cat_id</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wh_ratios_cls</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">wh_ratios</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="mf">0.03</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">wh_ratios</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># 此处可以调整阈值</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">wh_ratios</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">coco</span><span class="o">.</span><span class="n">anns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image_id</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w_ratio</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">coco</span><span class="o">.</span><span class="n">imgs</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">h_ratio</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">coco</span><span class="o">.</span><span class="n">imgs</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wh_ratios</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">w_ratio</span><span class="p">,</span> <span class="n">h_ratio</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_ratios</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wh_ratios</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_ratios</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">wh_ratios</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">wh_ratios</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">class_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_ratios_cls</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">wh_ratios</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="mf">0.03</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">wh_ratios</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span>
+</span></span><span class="line"><span class="cl"><span class="n">table_data</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">table_data</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">class_names</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">table_data</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;small object ratio&#39;</span><span class="p">,</span> <span class="n">wh_ratios_cls</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">table_data</span><span class="o">.</span><span class="n">get_string</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bbox_wh</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">]),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">coco</span><span class="o">.</span><span class="n">anns</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl"><span class="n">bbox_wh_unique</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bbox_wh</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">bbox_wh_count</span><span class="o">=</span><span class="p">[</span><span class="n">bbox_wh</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bbox_wh_unique</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">k</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">bbox_wh_count</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">bbox_wh_unique</span><span class="p">[:</span><span class="n">k</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="n">wh_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&#34;#55aacc&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="json2yolo">JSON2YOLO</h2>
+<p>YOLOv5的源码对数据集的要求时txt格式，源码的团队也有写转换的方法<a href="https://github.com/ultralytics/JSON2YOLO" target="_blank" rel="noopener noreffer ">ultralytics/JSON2YOLO: Convert JSON annotations into YOLO format. (github.com)</a>，此处我实现的代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">#COCO 格式的数据集转化为 YOLO 格式的数据集</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="n">json_path</span> <span class="o">=</span> <span class="s1">&#39;json文件的地址&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">save_path</span> <span class="o">=</span> <span class="s1">&#39;txt文件保存地址&#39;</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dw</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dh</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">h</span> <span class="o">=</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="c1"># round函数确定(xmin, ymin, xmax, ymax)的小数位数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">dw</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">dw</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">dh</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">h</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">dh</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json_file</span> <span class="o">=</span> <span class="n">json_path</span> <span class="c1"># COCO Object Instance 类型的标注</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ana_txt_save_path</span> <span class="o">=</span> <span class="n">save_path</span>  <span class="c1"># 保存的路径</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ana_txt_save_path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ana_txt_save_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># 因为json文件的类别id从1开始，所以此处做了一下重映射，并将类别存入了classes.txt文件下，当然也可以不保存文件；同样的也可以不做重映射，那样类别数量为51，因为id0为空</span>
+</span></span><span class="line"><span class="cl">    <span class="n">id_map</span> <span class="o">=</span> <span class="p">{}</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ana_txt_save_path</span><span class="p">,</span> <span class="s1">&#39;classes.txt&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;categories&#39;</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">category</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">id_map</span><span class="p">[</span><span class="n">category</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">id_map</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;images&#39;</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">filename</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="s2">&#34;file_name&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">img_width</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="s2">&#34;width&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">img_height</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="s2">&#34;height&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">img_id</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ana_txt_name</span> <span class="o">=</span> <span class="n">head</span> <span class="o">+</span> <span class="s2">&#34;.txt&#34;</span>  <span class="c1"># 对应的txt名字，与jpg一致</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f_txt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ana_txt_save_path</span><span class="p">,</span> <span class="n">ana_txt_name</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">img_id</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">box</span> <span class="o">=</span> <span class="n">convert</span><span class="p">((</span><span class="n">img_width</span><span class="p">,</span> <span class="n">img_height</span><span class="p">),</span> <span class="n">ann</span><span class="p">[</span><span class="s2">&#34;bbox&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="n">f_txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">id_map</span><span class="p">[</span><span class="n">ann</span><span class="p">[</span><span class="s2">&#34;category_id&#34;</span><span class="p">]],</span> <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">box</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f_txt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后提交检测结果的json文件时需要注意自己的类别id和比赛要求是否对应的上，否则会导致提交结果的成绩错误。</p>
+<h2 id="数据集离线增强">数据集离线增强</h2>
+<p>小样本很容易就想到了数据增强，包括但不限于添加噪点、图片的旋转平移、mosaic、copy_paste等等，yolov5本身自带了数据集的在线增强，但缺少了数据扩充，因此姑且是做了旋转的增强，且将图片按照类别名做了重命名。实现的方法代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 需要对训练集进行增强，将train和val</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">root_path</span> <span class="o">=</span> <span class="s2">&#34;数据集根目录&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">image_p</span> <span class="o">=</span> <span class="s2">&#34;images&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">label_p</span> <span class="o">=</span> <span class="s2">&#34;labels&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">image_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">image_p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">label_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">label_p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 获得对应类别的图片以及便签名</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_same_class</span><span class="p">(</span><span class="n">label_path</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">label</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">label_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_path</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">temp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">result</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将文件名重新按（类别_编号）的形式命名</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">change_file_name</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">class_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">class_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">find_same_class</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">label_p</span><span class="p">),</span> <span class="n">i</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">class_list</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">j</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">temp</span> <span class="o">+</span> <span class="s2">&#34;.jpg&#34;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_path</span><span class="p">,</span> <span class="n">temp</span> <span class="o">+</span> <span class="s2">&#34;.txt&#34;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_path</span><span class="p">,</span> <span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.txt&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 图片旋转，此处只做了90、180和270的旋转</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">image_rotation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">image_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">image_list</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">        <span class="n">img_p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res_name</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;_rot</span><span class="si">{}</span><span class="s2">.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temp</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">angle</span> <span class="o">==</span> <span class="mi">90</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ROTATE_90_CLOCKWISE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">angle</span> <span class="o">==</span> <span class="mi">180</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ROTATE_180</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">angle</span> <span class="o">==</span> <span class="mi">270</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">ROTATE_90_COUNTERCLOCKWISE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">res_name</span><span class="p">),</span> <span class="n">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rotation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># x, y坐标变成图片中心点，标准坐标轴</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ang</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">angle</span><span class="o">/</span><span class="mi">180</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 设定旋转矩阵</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 设定旋转角度</span>
+</span></span><span class="line"><span class="cl">    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ang</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 初始化旋转矩阵</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">beta</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">beta</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span> <span class="o">@</span> <span class="n">pt</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 还原x, y到图片坐标系</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nx</span> <span class="o">=</span> <span class="n">nx</span> <span class="o">+</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ny</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ny</span> <span class="o">+</span> <span class="mf">0.5</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">nx</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 旋转90度和270度时需要交换w和h</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">switch_p</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 标签的坐标旋转，x、y、w、h</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">label_rotation</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">label_path</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">label_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">label_list</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">lab</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">        <span class="n">save_name</span> <span class="o">=</span> <span class="n">lab</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lab</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">write_label</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">label</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">temp</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rotation</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">angle</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">angle</span> <span class="o">!=</span> <span class="mi">180</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                	<span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">,</span> <span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">switch_p</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">temp</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">write_label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_rot</span><span class="si">{}</span><span class="s2">.txt&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">save_name</span><span class="p">,</span> <span class="n">angle</span><span class="p">)),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">nf</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">write_label</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">nf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">+</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_rot</span><span class="si">{}</span><span class="s2">.txt,done&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">save_name</span><span class="p">,</span> <span class="n">angle</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="数据分割">数据分割</h2>
+<p>由于做了数据增强，感觉yolov5的autosplit有点不够看了，很容易造成过拟合，即测试集和训练集部分重合，因此我做了一个特殊的分割，按照每类进行划分，得益于文件重命名的原因，这个方法写的非常简单。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">root_path</span> <span class="o">=</span> <span class="s1">&#39;数据集根目录&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">image_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="s2">&#34;images&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 单个类下的图片总数为num，weights为train和val的分割，此处偷懒将所有类别的图片均设置为50张，实际可以根据上面的find_same_class方法读取每一类的图片数量</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">random_id</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">len</span> <span class="o">=</span> <span class="n">num</span> <span class="o">*</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">num_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">val_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">num_list</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">random_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">num_list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">random_num</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_num</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">num_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">num_list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">num_list</span><span class="p">,</span> <span class="n">val_list</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 根据重命名的图片文件，使得样本均衡</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">random_split</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">train_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">val_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">random_id</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">train_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">train_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot90.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">train_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot180.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">train_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot270.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot90.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot180.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_rot270.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">txt</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;train.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;val.txt&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">txt</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">train_list</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;./images/</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">train_list</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>  <span class="c1"># add image to txt file</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">txt</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">val_list</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;./images/</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val_list</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>  <span class="c1"># add image to txt file</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="模型训练">模型训练</h2>
+<p>YOLO源码需要编写一个yaml文件指向数据集，文件内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">train</span><span class="p">:</span><span class="w"> </span><span class="l">E:\Document\tianchi\dataset\ali_train\train\train.txt </span><span class="w"> </span><span class="c"># train images</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">val</span><span class="p">:</span><span class="w"> </span><span class="l">E:\Document\tianchi\dataset\ali_train\train\val.txt	 </span><span class="w"> </span><span class="c"># val images</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">nc</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="w">  </span><span class="c"># number of classes 如果没有做重映射，即id从1开始的话，nc=51，在names前加一个空类&#39;&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;冰墩墩&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sanyo/三洋&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Eifini/伊芙丽&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;PSALTER/诗篇&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Beaster&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;ON/昂跑&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;BYREDO/柏芮朵&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;Ubras&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Eternelle&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;PERFECT DIARY/完美日记&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;花西子&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Clarins/娇韵诗&#39;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;L&#39;occitane/欧舒丹&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;Versace/范思哲&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Mizuno/美津浓&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Lining/李宁&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;DOUBLE STAR/双星&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;YONEX/尤尼克斯&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Tory Burch/汤丽柏琦&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;Gucci/古驰&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Louis Vuitton/路易威登&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;CARTELO/卡帝乐鳄鱼&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;JORDAN&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;KENZO&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;UNDEFEATED&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;BOY LONDON&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;TREYO/雀友&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;carhartt&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;洁柔&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Blancpain/宝珀&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;GXG&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;乐町&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Diadora/迪亚多纳&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;TUCANO/啄木鸟&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Loewe&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Granite Gear&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;DESCENTE/迪桑特&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;OSPREY&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Swatch/斯沃琪&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;erke/鸿星尔克&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;Massimo Dutti&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;PINKO&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;PALLADIUM&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;origins/悦木之源&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Trendiano&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;音儿&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Monster Guardians&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s1">&#39;敷尔佳&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;IPSA/茵芙莎&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Schwarzkopf/施华蔻&#39;</span><span class="p">]</span><span class="w">  </span><span class="c"># class names</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>做完上述内容后，就可以进行YOLOv5模型的训练了，本文使用了YOLOv5s和YOLOv5m6两种，优点是官方都提供了基于COCO的预训练模型，且yolov5m6设计了4个检测框，理论上会有一定的提升，实验结果也确实如此。本文使用官方的yolov5m6作为baseline，本地测试mAP为0.56，线上测试mAP为0.50，而yolov5s的线上成绩只有0.48。</p>
+<p>更进一步的改进可以参考对于小目标检测的遥感方向的目标检测方案，如TPH-YOLO在检测头上引入了Transformer增强，还有YOLO-Z使用了Bi-FPN等，但由于没有预训练模型，因此直接训练的效果可能会不及yolov5m6。由于这次比赛不考虑检测时间，因此应该是Transformer大放异彩的时刻，此外RCNN的效果应该也会更好。</p>
+<h2 id="成绩提交">成绩提交</h2>
+<p>比赛是提交json文件进行考核，使用val.py自带的save-json方法生成即可，但需要对图片的id进行重映射，参考官方的提交规范可知，image-id需要从测试集的json文件中读取，本文直接采取暴力重命名的方法，重映射的方法如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">json_path</span> <span class="o">=</span> <span class="s1">&#39;json文件路径&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">img_path</span> <span class="o">=</span> <span class="s1">&#39;测试集图片根目录&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json_file</span> <span class="o">=</span> <span class="n">json_path</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">id_map</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># id和图片的映射</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;images&#39;</span><span class="p">]):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">file_name</span> <span class="o">=</span> <span class="n">category</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">id</span> <span class="o">=</span> <span class="n">category</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">id_map</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_name</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 对图片进行重命名</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">id_map</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">img_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">img_path</span><span class="p">,</span> <span class="n">id_map</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">img_path</span><span class="p">,</span> <span class="s2">&#34;</span><span class="si">{}</span><span class="s2">.jpg&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">img_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此外还需要准备一个yaml指向测试集图片，即更改yaml文件下的val地址，这样就可以使用val.py直接进行结果的生成了，需要注意的是如果做了重映射会导致类别id对应不上（偏了1），需要在save_json方法下进行修改，使读取的类别id+1保证检测结果的有效性。</p>
+<h2 id="总结">总结</h2>
+<p>本次比赛算是一次对于之前学习成果的检验，并发现自身的不足。受限于算力不足，许多网络模型甚至没有办法运行，采用大的网络则需要减少batch的大小，十分影响效率和结果，且本文是基于yolov5源码做的比赛，实在是费劲，且只能做消融实验，确实有些不够用了。这里推荐学习官方使用的mmdetection，不仅可以直接使用RCNN、SDD等网络进行检测，修改特征提取的主干网络也比较容易，后续我也会对学习mmdetection做出自己的总结。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 212112-04-04</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" data-title="阿里天池：小样本商标检测（baseline0.50）" data-hashtags="目标检测"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" data-hashtag="目标检测"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" data-title="阿里天池：小样本商标检测（baseline0.50）"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" data-title="阿里天池：小样本商标检测（baseline0.50）"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://pyorei.github.io/%E9%98%BF%E9%87%8C%E5%A4%A9%E6%B1%A0%E5%B0%8F%E6%A0%B7%E6%9C%AC%E5%95%86%E6%A0%87%E6%A3%80%E6%B5%8Bbaseline/" data-title="阿里天池：小样本商标检测（baseline0.50）" data-ralateuid="xxxx"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/xml%E6%96%87%E4%BB%B6%E8%BD%ACtxt/" class="prev" rel="prev" title="XML文件转TXT"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>XML文件转TXT</a>
+            <a href="/%E7%99%BE%E5%BA%A6%E9%A3%9E%E6%A1%A8-%E5%B7%A5%E4%B8%9A%E8%AF%BB%E8%A1%A8%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D%E4%BF%AE%E6%94%B9%E8%AF%BB%E8%A1%A8%E8%8C%83%E5%9B%B4%E5%92%8C%E6%95%B0%E5%80%BC/" class="next" rel="next" title="百度飞桨-工业读表案例实操（修改读表范围和数值）">百度飞桨-工业读表案例实操（修改读表范围和数值）<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.120.4">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">帕里亚</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.5.0/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"valine":{"appId":"QGzwQXOqs5JOhN4RGPOkR2mR-MdYXbMMI","appKey":"WBmoGyJtbqUswvfLh6L8iEBr","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@14.0.0/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-CN","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://leancloud.hugoloveit.com","visitor":true}},"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

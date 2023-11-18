@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>3D目标检测-BEVFormer、BEVDepth - </title><meta name="Description" content="Paliya&#39;s blog power by Hugo - LoveIt"><meta property="og:title" content="3D目标检测-BEVFormer、BEVDepth" />
+<meta property="og:description" content="很久没有更新博客了，近期一直在忙秋招相关的事情，抽空将暑期实习的3D目标检测资料进行总结归纳。由于篇幅过于繁杂，重点挑选基于纯视觉的BEV(鸟瞰图)的3D目标检测进行总结归纳，包括BEVFormer、BEVDepth。至于Focus3D、PETRv2、BEVFusion等，基于体素、点云和融合方案的3D目标检测有空可能会再做更新。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" /><meta property="og:image" content="https://pyorei.github.io/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-11-09T14:34:02+08:00" />
+<meta property="article:modified_time" content="2022-11-09T14:34:02+08:00" /><meta property="og:site_name" content="帕里亚的博客" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://pyorei.github.io/logo.png"/>
+
+<meta name="twitter:title" content="3D目标检测-BEVFormer、BEVDepth"/>
+<meta name="twitter:description" content="很久没有更新博客了，近期一直在忙秋招相关的事情，抽空将暑期实习的3D目标检测资料进行总结归纳。由于篇幅过于繁杂，重点挑选基于纯视觉的BEV(鸟瞰图)的3D目标检测进行总结归纳，包括BEVFormer、BEVDepth。至于Focus3D、PETRv2、BEVFusion等，基于体素、点云和融合方案的3D目标检测有空可能会再做更新。"/>
+<meta name="application-name" content="LoveIt">
+<meta name="apple-mobile-web-app-title" content="LoveIt"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" /><link rel="prev" href="https://pyorei.github.io/%E5%85%B3%E4%BA%8Eyolov7%E7%9A%84%E5%88%86%E6%9E%90/" /><link rel="next" href="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-%E4%BD%BF%E7%94%A8realsense%E9%87%87%E9%9B%86%E7%9A%84.ply%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%AE%AD%E7%BB%83/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "3D目标检测-BEVFormer、BEVDepth",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/pyorei.github.io\/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth\/"
+        },"image": ["https:\/\/pyorei.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "3D目标检测","wordcount":  4468 ,
+        "url": "https:\/\/pyorei.github.io\/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth\/","datePublished": "2022-11-09T14:34:02+08:00","dateModified": "2022-11-09T14:34:02+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/pyorei.github.io\/images\/avatar.png",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "帕里亚"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title=""><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>帕里亚的博客</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a><a href="javascript:void(0);" class="menu-item language" title="选择语言">
+                    <i class="fa fa-globe" aria-hidden="true"></i>                      
+                    <select class="language-select" id="language-select-desktop" onchange="location = this.value;"><option value="/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" selected>简体中文</option></select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title=""><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw' aria-hidden='true'></i></span>帕里亚的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a class="menu-item" href="https://github.com/dillonzq/LoveIt" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw' aria-hidden='true'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a><a href="javascript:void(0);" class="menu-item" title="选择语言">
+                    <i class="fa fa-globe fa-fw" aria-hidden="true"></i>
+                    <select class="language-select" onchange="location = this.value;"><option value="/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" selected>简体中文</option></select>
+                </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">3D目标检测-BEVFormer、BEVDepth</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>帕里亚</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/blog/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Blog</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="9092-11-11">9092-11-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 4468 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 9 分钟&nbsp;<span id="/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" class="leancloud_visitors" data-flag-title="3D目标检测-BEVFormer、BEVDepth">
+                        <i class="far fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#bevformer">BEVFormer</a>
+      <ul>
+        <li><a href="#bev-queries">BEV Queries</a></li>
+        <li><a href="#spatial-cross-attention">Spatial Cross-Attention</a></li>
+        <li><a href="#temporal-self-attention">Temporal Self-Attention</a></li>
+        <li><a href="#3d-object-detection">3D object detection</a></li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+    <li><a href="#bevdepth">BEVDepth</a>
+      <ul>
+        <li><a href="#lift-splat-shoot">Lift, Splat, Shoot</a></li>
+        <li><a href="#显式深度监督">显式深度监督</a></li>
+        <li><a href="#深度校正">深度校正</a></li>
+        <li><a href="#相机感知深度预测">相机感知深度预测</a></li>
+        <li><a href="#体素池化">体素池化</a></li>
+        <li><a href="#centerpoint">CenterPoint</a></li>
+        <li><a href="#总结-1">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>很久没有更新博客了，近期一直在忙秋招相关的事情，抽空将暑期实习的3D目标检测资料进行总结归纳。由于篇幅过于繁杂，重点挑选基于纯视觉的BEV(鸟瞰图)的3D目标检测进行总结归纳，包括BEVFormer、BEVDepth。至于Focus3D、PETRv2、BEVFusion等，基于体素、点云和融合方案的3D目标检测有空可能会再做更新。</p>
+<h2 id="bevformer">BEVFormer</h2>
+<p>BEVFormer有6个重复的encoder layers，每一层中，除了3个量身定制的设计（BEV queries, Spatial cross-attention, and Temporal self-attention），都是传统的transformers结构。在时间戳T上，多相机固像喂给backbone（比如ResNet-101）得到T时刻的特征图Ft；同时，保存前一个时间戳T-1的BEV特征Bt-1。在每—encoder layer，首先使用BEV queries Q，通过temporal self-attention去查询Bt-1，通过spatial cross-attention去查询Ft。前向传播后，当前encoder layer输出refined BEV特征，输入到next encoder layer。在6个堆叠的encoder计算后，生成当前时间戳T的统一BEV特征Bt，此后跟一个BEV检测器就可以满足3D目标检测的任务需求。</p>
+<center>
+	<img src='https://img-blog.csdnimg.cn/d7a42a14b6db483998958c3fa9465f54.png#pic_center'>
+	<center>BEVFormer网络结构</center>
+</center>
+<h3 id="bev-queries">BEV Queries</h3>
+<p>这一步是生成一组网格型的可学习参数Q，其维度为(HxWxC)其中H和W是BEV平面的空间形状，当确定H和W则当前参数负责坐标点附近的网格区域，每个网格区域相当于真实世界的s米。BEV特征的中心默认是自身车辆。在输入BEVFormer之前，向中添加可学习的position embedding。</p>
+<h3 id="spatial-cross-attention">Spatial Cross-Attention</h3>
+<p>这一步根据BEV Queries，查询并聚合多相机图像的空间特征。首先将BEV平面上的每个query提升为柱状的query，从中采样3D参考点映射到2D视图。考虑到计算量，作者参考了Deformable Attention,令每个点之和相机的Rol交互，并且映射的2D参考点利用相机内外参计算获得对应的3D参考点并只对应部分视图。最终，将采样特征的加权和作为模块的输出，定义过程如下。
+$$
+SCA(Q_p,F_t) = \frac{1}{|V_{hit}|} \sum^{N_{ref}}<em>{j=1} DeformAttn(Q_p,P(p,i,j),F^{i}</em>{t})
+$$
+其中i表示相机视图的索引，j表示2D参考点的索引，Nref表示对应BEV Query的所有3D参考点，Fit代表T时刻下第1个相机的图像特征。</p>
+<h3 id="temporal-self-attention">Temporal Self-Attention</h3>
+<p>此外作者还想利用时序信息，设计了TSA根据BEV Query查询并整合历史BEV的时序特征。从历史BEV特征中提取时间信息，这有利于运动对象的速度估计和严重遮挡对象的检测，同时带来的计算开销可以忽略不计。首先依据ego-motion将T-1时刻的BEV特征对齐到Query，使同一个网格上的特征对应于同一个真实世界位置。考虑1个时间间隔内的运动将在真实世界中对应大量偏移，因此在TSA中对相邻时间的特征之间的联系进行建模。对于每个序列的第一个样本，TSA退化为无时间信息的自注意力，使用{Q, Q}代替{Q, Bt-1}，将Q进行初始化。</p>
+<p>$$
+TSA(Q_p,(Q,B^{&rsquo;}<em>{t-1})) = \sum</em>{V\in(Q,B^{&rsquo;}_{t-1})} DeformAttn(Q_p,p,V)
+$$</p>
+<h3 id="3d-object-detection">3D object detection</h3>
+<p>论文中直接对2D检测器Deformable DETR进行了修改用于30目标检测，将生成的BEV特征作为检测器的输入，检测器除了定位外，还需要3D框大小和速度信息，并且使用L110ss监督回归。</p>
+<h3 id="总结">总结</h3>
+<p>BEVFomer的优点是：1.使用了可变注意力机制，缩减了像素投影的范围，在指定的范围做自注意力，增强了网络特征提取的能力；2.利用了时序信息，对Q进行初始化，先将上一个时间的BEV特征与当前时间对齐，再利用可变注意力提取BEV特征，而非直接将时序信息拼接，大大提升了对遮挡物体的检测能力；3.利用了相机内外参选择了3D参考点，提高了网络对于深度信息的提取。</p>
+<p>还可以提升改进的点有：1.选用更好的图像特征提取的主干网络，如：SwinTransformer、ConNext等；2、选择更加专业的检测头，现有检测头并没有进行BEV特征的再提取或融合，可以使用CenterPoint等Lidar方面的BEV检测头进行3D目标检测。</p>
+<h2 id="bevdepth">BEVDepth</h2>
+<center>
+    <img src='https://img-blog.csdnimg.cn/26e9afac2c534622bb32a21b05a0a0e4.png#pic_center'>
+    <center>BEVDepth网络结构</center>
+</center>
+<p>关于BEVDepth网络本身，原文写的非常的干脆：&ldquo;Let us start from a vanilla BEVDepth, which simply replaces the segmentation head in LSS with CenterPoint head for 3D detection.&quot;，作者先是将CenterPoint网络的检测头对LSS网络的分割头进行替换，随后作者对显式深度监督、深度校正、相机感知深度预测和体素池化进行了添加或改进。</p>
+<h3 id="lift-splat-shoot">Lift, Splat, Shoot</h3>
+<p>LSS是英伟达针对BEV任务提出的一种端到端的方法，将二维图像特征生成3D特征（对应Lift操作），然后把3D特征“拍扁”得到BEV特征图（对应Splat操作），最终在BEV特征图上进行相关任务操作（对应Shoot操作）。在BEVDepth中参考借鉴了Lift-Splat模型，Lift操作为每个像素点生成一堆离散的深度值，在模型训练的时候，由网络自己选择合适的深度。如相机视锥中一根射线上设置了10个可选深度值，第三个深度下特征最为显著，因此该位置的深度值为第三个。得到了像素的2D像素坐标以及深度值后，Splat操作利用相机的内参以及外参，即可计算得出像素对应的在车身坐标系中的3D坐标，最后将3D坐标投影在同一张俯视图中获得BEV特征。</p>
+<center>
+    <img src='https://img-blog.csdnimg.cn/ec518fbaa92a4616b40b441985ad2fc4.png#pic_center'>
+    <center>Lift操作示意图</center>    
+</center>
+<h3 id="显式深度监督">显式深度监督</h3>
+<p>作者认为原有单独的检测损失监督并不能很好的监督深度预测模块，因此提出了显式深度监督的方法(DepthNet)，论文的做法是利用点云数据派生的Dgt去监督深度预测的Dpred。首先，将相机获取的图像根据外参对齐到车辆自身坐标系下，并利用相机内参获取图像上各个像素点的深度值；随后使用真实的点云深度数据与计算得到的深度数据做对齐，具体的操作为min-pooling和one-hot，从而获得假定的深度真值；最后简单使用交叉熵对深度预测进行监督和回归。</p>
+<h3 id="深度校正">深度校正</h3>
+<p>在车辆行驶的过程中，相机的外参并不能保持绝对的稳定，而当DepthNet的感受野受到约束时，根据内外参计算图像深度得到的假定真值和真实的深度信息就会有较大的偏差。因此作者引入了多层残差网络和可变形卷积加入到深度预测模块的末端，以消除上述问题所带来的假定真值的偏差。</p>
+<center>
+    <img src='https://img-blog.csdnimg.cn/8f365fd683b84cf9b80fed58e7d35489.png#pic_center'>
+    <center>深度矫正和相机感知深度预测</center>
+</center>
+<h3 id="相机感知深度预测">相机感知深度预测</h3>
+<p>众所周知，通过相机内外参数可以将2D图像映射到3D坐标系下，因此为了进一步提升网络对深度信息的预测，作者选择将相机的内外参也输入到神经网络中。首先将内外参展平合并送入MLP，使得相机参数的维度与特征图对齐；随后和SE模块类似利用相机参数特征对原有的特征图进行权重再分配；最后将获得的特征输入到先前介绍的深度矫正中，从而获得预测的深度信息并由先前假定的真值进行监督。得益于LSS的解耦性，深度预测模块与检测头是互相独立的，因此不需要更改回归目标，使得网络具有更大的可扩展性。</p>
+<h3 id="体素池化">体素池化</h3>
+<center>
+    <img src='https://img-blog.csdnimg.cn/9c3d5f00efc14a9f9d8236f8b1258725.png#pic_center'>
+    <center>高效体素池化示意图</center>
+</center>
+<p>CenterPoint的检测头是一个BEV检测器，而体素池化是为了将先前获得的3D特征聚合成一个BEV特征。通常是基于车体坐标系将周围的空间划分为几个均匀分布的网格，然后将落入同一网格的3D特征相加形成相应的BEV特征。对应LSS的Splat模块利用累计求和的技巧，先对落入BEV网格的所有的特征进行累计求和，然后减去特征边界部分的累计求和。作者认为原有的算法存在较多的重复计算，且计算效率低下，因此作者提出了一种高效的体素池化方法。主要想法是为每个体特征分配一个CUDA线程，用于将该特征添加到其相应的BEV网格中。</p>
+<center>
+    <img src='https://img-blog.csdnimg.cn/9ab83c772e03460d920166e121e58e76.png#pic_center'>
+    <center>高效体素化与LSS的性能对比</center>
+</center>
+<h3 id="centerpoint">CenterPoint</h3>
+<p>CenterPoint是一个基于雷达的3D目标检测网络，由于其主干网络输出的是BEV特征图，且该网络的检测头在多种基于BEV的检测任务中效果较好，因此BEVDepth同样选择了直接使用CenterPoint的检测头作为任务头。完整的CenterPoint检测头分为两个阶段：第一阶段网络的输出为基于类的Heatmap;细化的子体素位置、目标的大小、转角和速度；第二阶段网络根据第一阶段的检测框信息和特征图信息，从预测边框的每个面的三维中心提取一个点特征。对于每个点，使用双线性插值从主干map-views输出M中提取一个特征，并将点特征输入全连接网络MLP对结果进行细化。由于二阶段主要简化并加速了之前的基于PointNet的特征提取器和RolAlign操作的两阶段3D检测器，并不适用于其它BEV特征提取器，所以在BEVDepth中仅仅使用了CenterPoint的一阶段作为训练和推理的检测头。</p>
+<p>Heatmap的生成方式与CenterNet类似：对于任意尺寸为WxHx3的图像，会生成一个尺寸为WIRxH/RxK的Heatmap，其中K是检测的类别数，R是缩放比例。Heatmap中的元素的取值为0或1，其中若热力图该点为1，则图像中该点是一个检测框的中心，若为0，则该点在图像中为背景。</p>
+<p>Centerpont与CenterNet区别是：由于三维空间中目标分布离散且三维目标不像图像中的目标一样近大远小，如果按照CenterNet的方式生成Heatmap，那么Healmap中将大部分都是背景，作者的解决方法是设置高斯半径公式为a= max((w),r)，其中1为最小高斯半径值，f为 CenterNet的高斯半径求解方法，及生成二维高斯圆作为目标。</p>
+<center>
+    <img src='https://img-blog.csdnimg.cn/c46a277f6a0f4852bad3a4f5775b1726.png#pic_center'>
+    <center>高斯圆热力图示例</center>
+</center>
+<p>除了目标物的中心点以外，还需要回归子体素位置细化、中心点离地高度、3D框大小、方向这些性质。子体素位置细化可以减少来自骨干网络的体素化和跨步的量化误差；离地高度可以帮助在3D中定位目标，并添加了地图视图投影删除的丢失的高度信息；大小预测和方向预测则将检测框完全定义，其中方向预测是将yaw角的正弦和余弦作为连续回归目标。一阶段的最后为了通过时间跟踪目标，模型学习预测每个检测到的目标的二维速度估计，作为额外的回归输出。具体的预测方法需要时态点云序列，将先前帧中的点转换并合并到当前帧中，并预测当前帧和过去帧之间的目标位置差异，通过时间差（速度）进行归一化。 与其他回归目标一样，速度估计也使用当前时间步的地面实况对象位置的L1损失进行监督。</p>
+<h3 id="总结-1">总结</h3>
+<p>BEVDepth作为现在nuScenes3D目标检测的SOTA方案，我认为它的优点是：1.端到端的3D目标检测任务，并没有附加别的BEV任务头，大大增强了回归的专一性；2.利用点云数据和相机内外参对深度预测进行了增强，并且将相机内外参也作为网络的输入进行深度信息的提取；3.增加了深度信息的自监督学习，使得网络对3维空间的信息有更好的提取效果；4.不同于BEVFormer和PETR√2使用Transfomer生成BEV特征，BEVDepth采用的是Lift-Splat方法，更接近Lidar的处理方式，使得BEVDepth拥有更好的性能。</p>
+<p>不过BEVDepth并没有使用时序信息更新BEV特征，且直接使用了CenterPoint的检测头并没有设计更好的检测头，2D图像特征提取的主干网络也选择了残差网络，所以仍然有很多可以改进升级的地方。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 9092-11-11</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" data-title="3D目标检测-BEVFormer、BEVDepth" data-hashtags="3D目标检测"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" data-hashtag="3D目标检测"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" data-title="3D目标检测-BEVFormer、BEVDepth"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" data-title="3D目标检测-BEVFormer、BEVDepth"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://pyorei.github.io/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-bevformerbevdepth/" data-title="3D目标检测-BEVFormer、BEVDepth" data-ralateuid="xxxx"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">3D目标检测</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/%E5%85%B3%E4%BA%8Eyolov7%E7%9A%84%E5%88%86%E6%9E%90/" class="prev" rel="prev" title="关于YOLOv7的分析"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>关于YOLOv7的分析</a>
+            <a href="/3d%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B-%E4%BD%BF%E7%94%A8realsense%E9%87%87%E9%9B%86%E7%9A%84.ply%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E8%AE%AD%E7%BB%83/" class="next" rel="next" title="3D目标检测-使用realsense采集的.ply文件进行训练">3D目标检测-使用realsense采集的.ply文件进行训练<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.120.4">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">帕里亚</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="/lib/valine/valine.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/valine@1.5.0/dist/Valine.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"valine":{"appId":"QGzwQXOqs5JOhN4RGPOkR2mR-MdYXbMMI","appKey":"WBmoGyJtbqUswvfLh6L8iEBr","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@14.0.0/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-CN","pageSize":10,"placeholder":"你的评论 ...","recordIP":true,"serverURLs":"https://leancloud.hugoloveit.com","visitor":true}},"lightgallery":true,"search":{"algoliaAppID":"PASDMWALPK","algoliaIndex":"index.zh-cn","algoliaSearchKey":"b42948e51daaa93df92381c8e2ac0f93","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

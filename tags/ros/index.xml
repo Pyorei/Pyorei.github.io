@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>ros - 标签 - </title>
+        <link>https://pyorei.github.io/tags/ros/</link>
+        <description>ros - 标签 - </description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 03 Nov 2021 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://pyorei.github.io/tags/ros/" rel="self" type="application/rss+xml" /><item>
+    <title>ros serial的学习</title>
+    <link>https://pyorei.github.io/ros-serial%E7%9A%84%E5%AD%A6%E4%B9%A0/</link>
+    <pubDate>Wed, 03 Nov 2021 12:00:00 &#43;0800</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/ros-serial%E7%9A%84%E5%AD%A6%E4%B9%A0/</guid>
+    <description><![CDATA[<p><a href="https://blog.csdn.net/weixin_43046653/article/details/84334529" target="_blank" rel="noopener noreffer ">这篇文章</a>提到可以使用两种方法对Arduino开发板进行通信，一种是基于ros通讯机制的rosserial进行通信，一种是直接使用串口进行通信。两种方法各有优缺点，本文对两种方法进行了简单的整理和总结。</p>]]></description>
+</item>
+</channel>
+</rss>
