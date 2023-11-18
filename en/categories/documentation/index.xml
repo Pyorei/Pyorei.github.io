@@ -1,0 +1,8 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Documentation - Category - </title>
+        <link>https://pyorei.github.io/en/categories/documentation/</link>
+        <description>Documentation - Category - </description>
+        <generator>Hugo -- gohugo.io</generator><language>en</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://pyorei.github.io/en/categories/documentation/" rel="self" type="application/rss+xml" /></channel>
+</rss>

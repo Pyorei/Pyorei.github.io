@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Categories - 分类 - </title>
+        <link>https://pyorei.github.io/categories/</link>
+        <description>Categories - 分类 - </description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pyorei@163.com (帕里亚)</managingEditor>
+            <webMaster>pyorei@163.com (帕里亚)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><atom:link href="https://pyorei.github.io/categories/" rel="self" type="application/rss+xml" /><item>
+    <title>文档</title>
+    <link>https://pyorei.github.io/categories/documentation/</link>
+    <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate>
+    <author>帕里亚</author>
+    <guid>https://pyorei.github.io/categories/documentation/</guid>
+    <description><![CDATA[]]></description>
+</item>
+</channel>
+</rss>
