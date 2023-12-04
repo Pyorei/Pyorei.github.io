@@ -23,7 +23,7 @@ tags: # 标签
 
 Ubuntu系统下不推荐使用apt-get指令下载安装Arduino，此版本过低。根据Linux系统在官网下载最新的安装包，将安装包解压至/opt文件夹下，随后进入安装目录给install.sh可执行权限，并运行，此处以1.8.16为例：
 
-```linux
+```shell
 cd /opt/arduino-1.8.16/
 sudo chmod +x install.sh
 sudo ./install.sh
@@ -31,7 +31,7 @@ sudo ./install.sh
 
 Ubuntu自带了串口驱动，如果进入IDE无法识别串口，需要先给予权限，再移除自带程序brltty，此处username为自己的用户名：
 
-```linux
+```shell
 sudo chown username /dev/ttyUSB0
 sudo apt-get remove brltty
 ```

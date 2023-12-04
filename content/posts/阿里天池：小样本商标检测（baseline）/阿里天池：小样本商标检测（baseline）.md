@@ -21,7 +21,7 @@ tags: ["目标检测"] # 标签
 
 首先比赛提供的是COCO格式的数据标注结果，初赛按理说是提供50类商品的每类50张图片，但实际只有2476张，可以参考[这篇文章](https://github.com/CarryHJR/LogDet/tree/master/LogDetMini/eda)做数据集的分析，具体分析结果如下：
 
-![天池eda1](https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![天池eda1](https://img-blog.csdnimg.cn/9e704389bc694d18a3c76dcc34f99479.png)
 
 图中可以看出数据集所有图片的宽高和宽高比，大多还是以淘宝商品页的800*800为主，实现代码如下：
 
@@ -61,7 +61,7 @@ plt.show()
 
 对于数据标注的结果分析如下，重点考察bbox的宽高比和面积占比：
 
-![bbox长宽比](https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5biV6YeM5Lqa,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+![bbox长宽比](https://img-blog.csdnimg.cn/3425d4ac32bb447d972e4ffdafe12118.png)
 
 `bbox 小目标(area<%3)占比 统计`
 

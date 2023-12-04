@@ -59,17 +59,17 @@ names: ['cat', 'dog']
 
 然后就是对源码的train.py文件进行配置，可以使用ide进行参数配置，也可以在控制台手动输入各种参数。其中img代表输入图像尺寸，batch为处理图像数量，epochs为迭代次数（默认为300），data为之前编写的配置文件，weights为权重模型。其余还有许多参数，分别代表什么可以查看源码，也可以参考[这篇文章](https://blog.csdn.net/weixin_41990671/article/details/107300314)。
 
-```
+```shell
 python train.py --img 640 --batch 16 --epochs 3 --data mydata.yaml --weights yolov5s.pt
 ```
 
 训练的时候会遇到内存不足的情况，可以尝试将batch改小，即一次处理的图片数量，或是增加电脑的虚拟内存，再不行可以将train.py内dataloader的num_workers参数修改为0。训练完成后会将最好的一次模型和最后一次模型以及各类数据存放在run\train文件夹内，有可能会遇到300次迭代仍得不到好的结果的情况，此时可以将best.pt存放到yolov5的根目录下，并使用best.pt进行下一次训练。
 
-# yolov5检测验证
+## yolov5检测验证
 
 detect.py为目标检测的执行文件，与train步骤类似，可以使用ide配置参数，也可以在控制台输入命令，其中weights为权重模型，source为检测对象，运行完成后会将结果存放在run\detect文件夹下。
 
-```linux
+```shell
 python path/to/detect.py --weights yolov5s.pt --source 0			#摄像头编号
 													   img.jpg		#图片
 													   vid.mp4		#视频

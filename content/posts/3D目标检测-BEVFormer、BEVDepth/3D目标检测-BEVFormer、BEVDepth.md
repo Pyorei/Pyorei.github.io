@@ -20,7 +20,7 @@ lightgallery: true
 BEVFormer有6个重复的encoder layers，每一层中，除了3个量身定制的设计（BEV queries, Spatial cross-attention, and Temporal self-attention），都是传统的transformers结构。在时间戳T上，多相机固像喂给backbone（比如ResNet-101）得到T时刻的特征图Ft；同时，保存前一个时间戳T-1的BEV特征Bt-1。在每—encoder layer，首先使用BEV queries Q，通过temporal self-attention去查询Bt-1，通过spatial cross-attention去查询Ft。前向传播后，当前encoder layer输出refined BEV特征，输入到next encoder layer。在6个堆叠的encoder计算后，生成当前时间戳T的统一BEV特征Bt，此后跟一个BEV检测器就可以满足3D目标检测的任务需求。
 
 <center>
-	<img src='https://img-blog.csdnimg.cn/d7a42a14b6db483998958c3fa9465f54.png#pic_center'>
+	<img src='https://img-blog.csdnimg.cn/d7a42a14b6db483998958c3fa9465f54.png'>
 	<center>BEVFormer网络结构</center>
 </center>
 
@@ -57,7 +57,7 @@ BEVFomer的优点是：1.使用了可变注意力机制，缩减了像素投影�
 
 ## BEVDepth
 <center>
-    <img src='https://img-blog.csdnimg.cn/26e9afac2c534622bb32a21b05a0a0e4.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/26e9afac2c534622bb32a21b05a0a0e4.png'>
     <center>BEVDepth网络结构</center>
 </center>
 
@@ -69,7 +69,7 @@ BEVFomer的优点是：1.使用了可变注意力机制，缩减了像素投影�
 LSS是英伟达针对BEV任务提出的一种端到端的方法，将二维图像特征生成3D特征（对应Lift操作），然后把3D特征“拍扁”得到BEV特征图（对应Splat操作），最终在BEV特征图上进行相关任务操作（对应Shoot操作）。在BEVDepth中参考借鉴了Lift-Splat模型，Lift操作为每个像素点生成一堆离散的深度值，在模型训练的时候，由网络自己选择合适的深度。如相机视锥中一根射线上设置了10个可选深度值，第三个深度下特征最为显著，因此该位置的深度值为第三个。得到了像素的2D像素坐标以及深度值后，Splat操作利用相机的内参以及外参，即可计算得出像素对应的在车身坐标系中的3D坐标，最后将3D坐标投影在同一张俯视图中获得BEV特征。
 
 <center>
-    <img src='https://img-blog.csdnimg.cn/ec518fbaa92a4616b40b441985ad2fc4.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/ec518fbaa92a4616b40b441985ad2fc4.png'>
     <center>Lift操作示意图</center>    
 </center>
 
@@ -83,7 +83,7 @@ LSS是英伟达针对BEV任务提出的一种端到端的方法，将二维图�
 在车辆行驶的过程中，相机的外参并不能保持绝对的稳定，而当DepthNet的感受野受到约束时，根据内外参计算图像深度得到的假定真值和真实的深度信息就会有较大的偏差。因此作者引入了多层残差网络和可变形卷积加入到深度预测模块的末端，以消除上述问题所带来的假定真值的偏差。
 
 <center>
-    <img src='https://img-blog.csdnimg.cn/8f365fd683b84cf9b80fed58e7d35489.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/8f365fd683b84cf9b80fed58e7d35489.png'>
     <center>深度矫正和相机感知深度预测</center>
 </center>
 
@@ -95,14 +95,14 @@ LSS是英伟达针对BEV任务提出的一种端到端的方法，将二维图�
 ### 体素池化
 
 <center>
-    <img src='https://img-blog.csdnimg.cn/9c3d5f00efc14a9f9d8236f8b1258725.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/9c3d5f00efc14a9f9d8236f8b1258725.png'>
     <center>高效体素池化示意图</center>
 </center>
 
 CenterPoint的检测头是一个BEV检测器，而体素池化是为了将先前获得的3D特征聚合成一个BEV特征。通常是基于车体坐标系将周围的空间划分为几个均匀分布的网格，然后将落入同一网格的3D特征相加形成相应的BEV特征。对应LSS的Splat模块利用累计求和的技巧，先对落入BEV网格的所有的特征进行累计求和，然后减去特征边界部分的累计求和。作者认为原有的算法存在较多的重复计算，且计算效率低下，因此作者提出了一种高效的体素池化方法。主要想法是为每个体特征分配一个CUDA线程，用于将该特征添加到其相应的BEV网格中。
 
 <center>
-    <img src='https://img-blog.csdnimg.cn/9ab83c772e03460d920166e121e58e76.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/9ab83c772e03460d920166e121e58e76.png'>
     <center>高效体素化与LSS的性能对比</center>
 </center>
 
@@ -116,13 +116,13 @@ Heatmap的生成方式与CenterNet类似：对于任意尺寸为WxHx3的图像�
 Centerpont与CenterNet区别是：由于三维空间中目标分布离散且三维目标不像图像中的目标一样近大远小，如果按照CenterNet的方式生成Heatmap，那么Healmap中将大部分都是背景，作者的解决方法是设置高斯半径公式为a= max((w),r)，其中1为最小高斯半径值，f为 CenterNet的高斯半径求解方法，及生成二维高斯圆作为目标。
 
 <center>
-    <img src='https://img-blog.csdnimg.cn/c46a277f6a0f4852bad3a4f5775b1726.png#pic_center'>
+    <img src='https://img-blog.csdnimg.cn/c46a277f6a0f4852bad3a4f5775b1726.png'>
     <center>高斯圆热力图示例</center>
 </center>
 
 除了目标物的中心点以外，还需要回归子体素位置细化、中心点离地高度、3D框大小、方向这些性质。子体素位置细化可以减少来自骨干网络的体素化和跨步的量化误差；离地高度可以帮助在3D中定位目标，并添加了地图视图投影删除的丢失的高度信息；大小预测和方向预测则将检测框完全定义，其中方向预测是将yaw角的正弦和余弦作为连续回归目标。一阶段的最后为了通过时间跟踪目标，模型学习预测每个检测到的目标的二维速度估计，作为额外的回归输出。具体的预测方法需要时态点云序列，将先前帧中的点转换并合并到当前帧中，并预测当前帧和过去帧之间的目标位置差异，通过时间差（速度）进行归一化。 与其他回归目标一样，速度估计也使用当前时间步的地面实况对象位置的L1损失进行监督。
 
-### 总结
+## 总结
 
 BEVDepth作为现在nuScenes3D目标检测的SOTA方案，我认为它的优点是：1.端到端的3D目标检测任务，并没有附加别的BEV任务头，大大增强了回归的专一性；2.利用点云数据和相机内外参对深度预测进行了增强，并且将相机内外参也作为网络的输入进行深度信息的提取；3.增加了深度信息的自监督学习，使得网络对3维空间的信息有更好的提取效果；4.不同于BEVFormer和PETR√2使用Transfomer生成BEV特征，BEVDepth采用的是Lift-Splat方法，更接近Lidar的处理方式，使得BEVDepth拥有更好的性能。
 

@@ -80,9 +80,14 @@ RepVGG结构是在训练时进行多分支拓扑，而在进行推理时等效�
 
 ## Reference
 
-1.YOLOX: Exceeding YOLO Series in 2021
-2.[Rethinking Classification and Localization for Object Detection](https://arxiv.org/pdf/1904.06493v4.pdf)
-3.[Fcos: Fully convolutional one-stage object detection](https://arxiv.org/pdf/1904.01355.pdf)
-4.[OTA: Optimal Transport Assignment for Object Detection](https://arxiv.org/abs/2103.14259)
-5.[RepVGG: Making VGG-style ConvNets Great Again](https://arxiv.org/abs/2101.03697)
-6.[SloU Loss: More Powerful Learning for Bounding Box Regression](https://arxiv.org/abs/2205.12740)
+1. YOLOX: Exceeding YOLO Series in 2021
+
+2. [Rethinking Classification and Localization for Object Detection](https://arxiv.org/pdf/1904.06493v4.pdf)
+
+3. [Fcos: Fully convolutional one-stage object detection](https://arxiv.org/pdf/1904.01355.pdf)
+
+4. [OTA: Optimal Transport Assignment for Object Detection](https://arxiv.org/abs/2103.14259)
+
+5. [RepVGG: Making VGG-style ConvNets Great Again](https://arxiv.org/abs/2101.03697)
+
+6. [SloU Loss: More Powerful Learning for Bounding Box Regression](https://arxiv.org/abs/2205.12740)

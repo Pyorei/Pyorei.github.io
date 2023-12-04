@@ -16,7 +16,7 @@ tags: # 标签
 
 <!--more-->
 
-# rosserial的使用
+## rosserial的使用
 
 [这篇文章](https://blog.csdn.net/qq_38441692/article/details/97814194)较为详细的演示了如何使用rosserial arduino，首先需要安装rosserial arduino。
 
@@ -33,7 +33,7 @@ rosrun rosserial_arduino make_libraries.py
 
 随后就可以在arduino开发板上使用ROS库下的方法了，如创建发布者和订阅者等等。由于使用了ROS库下的方法，rosserial可以使得arduino发布TF树、自身传感器数值等信息，且不需要修改串口号等内容，即插即用。
 
-# 串口的使用
+## 串口的使用
 
 [这篇文章](https://blog.csdn.net/u014695839/article/details/81209082)演示了如何使用串口直接与arduino相互通讯，串口的使用相对快捷简单些，且不需要对已经编写好的Arduino开发板进行修改。只需要了解串口信息的含义，便可以通过串口实现机械臂的控制。缺点就是需要对ROS系统的消息进行整理，转化为字符串传输给开发板。
 
