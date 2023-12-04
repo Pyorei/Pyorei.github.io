@@ -1,7 +1,6 @@
 ---
 title: XML文件转TXT # 标题
 date: 2022-04-06T12:00:00+08:00 # 时间
-lastmod: 2022-04-06T12:00:00+08:00
 
 draft: False
 author: "帕里亚"
@@ -53,7 +52,7 @@ def convert_annotation(image_id, width, hight):
     out_file = open(txt_path + '\\{}.txt'.format(image_id), 'w')  # 生成txt格式文件
     tree = ET.parse(in_file)
     root = tree.getroot()
-    size = root.find('size')	# 此处是获取原图的宽高，便于后续的归一化操作
+    size = root.find('size') # 此处是获取原图的宽高，便于后续的归一化操作
     if size is not None:
         w = int(size.find('width').text)
         h = int(size.find('height').text)
@@ -99,4 +98,3 @@ if __name__  == "__main__":
         convert_annotation(label_name, w[i], h[i])
         i += 1
 ```
-
