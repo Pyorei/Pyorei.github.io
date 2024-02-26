@@ -21,7 +21,7 @@ tags: # 标签
 
 [官网](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md)很好的介绍了realsense d455相机的配置流程，且现在英特尔官方的安装包已经更新添加了d455相机相关的内容，便于我们调用其坐标以实现相机的配置。官网的安装方法如下：
 
-```linux
+```shell
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE In case the public key still cannot be retrieved, check and specify proxy settings: export http_proxy="http://<proxy>:<port>"
 
 sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
@@ -35,7 +35,7 @@ sudo apt-get install librealsense2-dbg
 
 完成安装后可以在终端输入"realsense-viewer"打开自带的预览界面，完成SDK的安装后还需要在工作空间配置realsense-ros，[官网的方法](https://github.com/IntelRealSense/realsense-ros)也很简单，首先需要将realsense-ros的功能包解压或clone到工作空间的src下，随后退回到工作空间的根目录进行catkin_make即可完成配置，官网是新建了一个工作空间，指令如下：
 
-```linux
+```shell
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src/
 
@@ -67,7 +67,7 @@ source ~/.bashrc
 
 其中(x, y, z, yaw, pitch, roll)为child_frame（摄像头坐标）和frame（机械臂末端坐标）的坐标变换关系，随后在终端中逐个开启各个节点，指令如下：
 
-```linux
+```shell
 roslaunch realsense2_camera rs_camera.launch
 roslaunch myrobot_moveit demo.launch
 rosrun myserial get_data
